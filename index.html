@@ -243,7 +243,7 @@
     
     <div class="meteor-shower" id="meteor-shower"></div>
     
-    <button class="state-toggle" id="stateToggle">切换到进阶状态</button>
+    <button class="state-toggle" id="stateToggle">聚合</button>
     
     <div class="search-container">
         <input type="text" id="search" placeholder="搜索软件...">
@@ -444,7 +444,7 @@
             stageTwoActive = true;
             body.classList.add('stage-two');
             meteorShower.style.display = 'block';
-            stateToggle.textContent = '切换到初始状态';
+            stateToggle.textContent = '平铺';
             
             arrangeInSphere();
             startMeteorShower();
@@ -454,7 +454,7 @@
             stageTwoActive = false;
             body.classList.remove('stage-two');
             meteorShower.style.display = 'none';
-            stateToggle.textContent = '切换到进阶状态';
+            stateToggle.textContent = '聚合';
             
             renderSoftwareGridByCategory();
         }
