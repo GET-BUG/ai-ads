@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Windows软件导航</title>
-    <link rel="icon" type="image/x-icon" href="https://blog.icctv.top/img/logo.png">
+    <!-- 浏览器标签图标 -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTQiIGZpbGw9IiMyMTk2RjMiLz4KPHBhdGggZD0iTTE2IDhMMTIgMTJoOHY0aC04bDQgNHYtOGg0di00aC00eiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+">
     <style>
         * {
             margin: 0;
@@ -115,7 +116,7 @@
             border-radius: 10px;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items:  center;
             justify-content: center;
             padding: 10px;
             cursor: pointer;
@@ -174,12 +175,13 @@
         
         .stage-two #software-container {
             perspective: 1000px;
+            transform-style: preserve-3d;
+            animation: rotateSphere 30s linear infinite;
         }
         
         .stage-two .software-item {
             border-radius: 50%;
-            animation: rotateSphere 20s linear infinite;
-            transform: none !important;
+            transform-style: preserve-3d;
         }
         
         .stage-two .category-label {
@@ -292,7 +294,7 @@
         </svg>
     </button>
     
-    <button class="state-toggle" id="stateToggle">聚</button>
+    <button class="state-toggle" id="stateToggle">聚合</button>
     
     <div class="search-container">
         <input type="text" id="search" placeholder="搜索软件...">
@@ -492,7 +494,7 @@
             stageTwoActive = true;
             body.classList.add('stage-two');
             meteorShower.style.display = 'block';
-            stateToggle.textContent = '散';
+            stateToggle.textContent = '平铺';
             
             arrangeInSphere();
             startMeteorShower();
@@ -502,14 +504,14 @@
             stageTwoActive = false;
             body.classList.remove('stage-two');
             meteorShower.style.display = 'none';
-            stateToggle.textContent = '聚';
+            stateToggle.textContent = '聚合';
             
             renderSoftwareGridByCategory();
         }
         
         function arrangeInSphere() {
             const items = document.querySelectorAll('.software-item');
-            const radius = Math.min(window.innerWidth, window.innerHeight) * 0.3;
+            const radius = Math.min(window.innerWidth, window.innerHeight) * 0.4; // 增加半径
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
             
