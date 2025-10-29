@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Windows软件导航</title>
-    <!-- 浏览器标签图标 -->
-    <link rel="icon" type="image/x-icon" href="https://blog.icctv.top/img/logo.png">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTQiIGZpbGw9IiMyMTk2RjMiLz4KPHBhdGggZD0iTTE2IDhMMTIgMTJoOHY0aC04bDQgNHYtOGg0di00aC00eiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+">
     <style>
         * {
             margin: 0;
@@ -105,32 +104,35 @@
         #software-container {
             flex: 1;
             position: relative;
-            padding: 20px;
+            padding: 10px;
             transition: all 1s ease;
             z-index: 5;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-auto-rows: minmax(60px, auto);
+            gap: 0;
+            overflow: hidden;
         }
         
         .software-item {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border-radius: 10px;
             display: flex;
             flex-direction: column;
-            align-items:  center;
+            align-items: center;
             justify-content: center;
-            padding: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            position: absolute;
+            position: relative;
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .software-item:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
             background: rgba(255, 255, 255, 0.2);
-            z-index: 20;
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
         }
         
         .software-item img {
@@ -142,7 +144,6 @@
             image-rendering: -webkit-optimize-contrast;
             image-rendering: crisp-edges;
             image-rendering: high-quality;
-            filter: brightness(1.1) contrast(1.1);
         }
         
         .software-item .software-name {
@@ -160,31 +161,27 @@
             max-height: 20px;
         }
         
-        .category-label {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            z-index: 5;
-            opacity: 0.8;
+        .empty-block {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .stage-two #software-container {
+            grid-template-columns: none;
+            grid-auto-rows: none;
+            display: block;
             perspective: 1000px;
-            transform-style: preserve-3d;
-            animation: rotateSphere 30s linear infinite;
         }
         
         .stage-two .software-item {
             border-radius: 50%;
-            transform-style: preserve-3d;
+            animation: rotateSphere 20s linear infinite;
+            transform: none !important;
+            position: absolute;
+            border: none;
         }
         
-        .stage-two .category-label {
+        .stage-two .empty-block {
             display: none;
         }
         
@@ -246,6 +243,11 @@
         }
         
         @media (max-width: 768px) {
+            #software-container {
+                grid-template-columns: repeat(5, 1fr);
+                grid-auto-rows: minmax(50px, auto);
+            }
+            
             .software-item img {
                 width: 30px;
                 height: 30px;
@@ -254,30 +256,6 @@
             .stage-two .software-item {
                 width: 50px;
                 height: 50px;
-            }
-            
-            .category-label {
-                font-size: 10px;
-                padding: 3px 8px;
-            }
-            
-            .state-toggle {
-                top: 10px;
-                right: 60px;
-                font-size: 12px;
-                padding: 6px 12px;
-            }
-            
-            .github-button {
-                top: 10px;
-                right: 10px;
-                width: 36px;
-                height: 36px;
-            }
-            
-            .github-button svg {
-                width: 20px;
-                height: 20px;
             }
         }
     </style>
@@ -294,7 +272,7 @@
         </svg>
     </button>
     
-    <button class="state-toggle" id="stateToggle">聚合</button>
+    <button class="state-toggle" id="stateToggle">点</button>
     
     <div class="search-container">
         <input type="text" id="search" placeholder="搜索软件...">
@@ -303,35 +281,36 @@
     <div id="software-container"></div>
 
     <script>
+        // 软件数据
         const softwareData = [
-            { name: "7-Zip", category: "装机必备", icon: "https://www.7-zip.org/favicon.ico", url: "https://www.7-zip.org/" },
-            { name: "Everything", category: "装机必备", icon: "https://www.voidtools.com/favicon.ico", url: "https://www.voidtools.com/" },
-            { name: "Snipaste", category: "装机必备", icon: "https://zh.snipaste.com/favicon.ico", url: "https://zh.snipaste.com/" },
-            { name: "ScreenToGif", category: "装机必备", icon: "https://www.screentogif.com/img/logo.d2151712.png", url: "https://www.screentogif.com/" },
-            { name: "Drawio", category: "装机必备", icon: "https://www.diagrams.net/favicon.ico", url: "https://www.diagrams.net/" },
-            { name: "TrafficMonitor", category: "装机必备", icon: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMTgiIGZpbGw9IiMyMTk2RjMiLz4KPHRleHQgeD0iMjAiIHk9IjI1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5UTTwvdGV4dD4KPC9zdmc+", url: "https://gitee.com/zhongyang219/TrafficMonitor" },
-            { name: "Typora", category: "装机必备", icon: "https://typoraio.cn/img/favicon-128.png", url: "https://typora.io/" },
-            { name: "火绒", category: "系统工具", icon: "https://www.huorong.cn/favicon.ico", url: "https://www.huorong.cn/" },
-            { name: "360安全卫士", category: "系统工具", icon: "https://www.360.cn/favicon.ico", url: "https://www.360.cn/" },
-            { name: "阿里云盘", category: "系统工具", icon: "https://www.aliyundrive.com/favicon.ico", url: "https://www.aliyundrive.com/" },
-            { name: "百度网盘", category: "系统工具", icon: "https://nd-static.bdstatic.com/m-static/wp-brand/favicon.ico", url: "https://pan.baidu.com/" },
-            { name: "向日葵", category: "系统工具", icon: "https://sunlogin.oray.com/favicon.ico", url: "https://sunlogin.oray.com/" },
-            { name: "CleanMyPC", category: "好物推荐", icon: "https://cleanmypcweb.com/cleanmypc/favicon.ico", url: "https://cleanmypcweb.com/cleanmypc/" },
-            { name: "Q-Dir", category: "好物推荐", icon: "https://www.softwareok.com/img/ico/Q-Dir.png", url: "http://www.softwareok.com/?seite=Freeware/Q-Dir" },
-            { name: "Quicker", category: "好物推荐", icon: "https://getquicker.net/favicon.ico", url: "https://getquicker.net" },
-            { name: "VLC media player", category: "媒体工具", icon: "https://images.videolan.org/images/VLC-IconSmall.png", url: "https://www.videolan.org/vlc/" },
-            { name: "OBS Studio", category: "媒体工具", icon: "https://obsproject.com/favicon.ico", url: "https://obsproject.com/" },
-            { name: "PotPlayer", category: "媒体工具", icon: "https://potplayer.org/favicon.ico", url: "https://potplayer.org/" },
-            { name: "Steam", category: "游戏平台", icon: "https://store.steampowered.com/favicon.ico", url: "https://store.steampowered.com/" },
-            { name: "Git", category: "开发工具", icon: "https://git-scm.com/favicon.ico", url: "https://git-scm.com/" },
-            { name: "Visual Studio Code", category: "开发工具", icon: "https://code.visualstudio.com/favicon.ico", url: "https://code.visualstudio.com/" },
-            { name: "VirtualBox", category: "开发工具", icon: "https://www.virtualbox.org/favicon.ico", url: "https://www.virtualbox.org/" },
+            { name: "QQ", icon: "https://qq-web.cdn-go.cn//im.qq.com_new/7bce6d6d/asset/favicon.ico", url: "https://im.qq.com/index/" },
+            { name: "微信", icon: "https://res.wx.qq.com/a/wx_fed/assets/res/NTI4MWU5.ico", url: "https://weixin.qq.com/" },
+            { name: "百度网盘", icon: "https://pan.baidu.com/favicon.ico", url: "https://pan.baidu.com/" },
+            { name: "火绒", icon: "https://www.huorong.cn/favicon.png", url: "https://www.huorong.cn/" },
+            { name: "7-Zip", icon: "https://www.7-zip.org/7ziplogo.png", url: "https://www.7-zip.org/" },
+            { name: "Everything", icon: "https://www.voidtools.com/favicon.ico", url: "https://www.voidtools.com/" },
+            { name: "Snipaste", icon: "https://zh.snipaste.com/img/logo.svg", url: "https://zh.snipaste.com/" },
+            { name: "ScreenToGif", icon: "https://www.screentogif.com/img/logo.d2151712.png", url: "https://www.screentogif.com/" },
+            { name: "Drawio", icon: "https://www.diagrams.net/favicon.ico", url: "https://www.diagrams.net/" },
+            { name: "Typora", icon: "https://typoraio.cn/img/favicon-128.png", url: "https://typora.io/" },
+            { name: "360安全卫士", icon: "https://p1.ssl.qhimg.com/t012cfa8cdb7887d2c6.png", url: "https://www.360.cn/" },
+            { name: "阿里云盘", icon: "https://img.alicdn.com/imgextra/i1/O1CN01JDQCi21Dc8EfbRwvF_!!6000000000236-73-tps-64-64.ico", url: "https://www.aliyundrive.com/" },
+            { name: "向日葵", icon: "https://sunlogin.oray.com/favicon.ico", url: "https://sunlogin.oray.com/" },
+            { name: "CleanMyPC", icon: "https://cleanmypcweb.com/cleanmypc/favicon.ico", url: "https://cleanmypcweb.com/cleanmypc/" },
+            { name: "Quicker", icon: "https://getquicker.net/favicon.ico", url: "https://getquicker.net" },
+            { name: "VLC media player", icon: "https://images.videolan.org/images/VLC-IconSmall.png", url: "https://www.videolan.org/vlc/" },
+            { name: "OBS Studio", icon: "https://obsproject.com/favicon-32x32.png", url: "https://obsproject.com/" },
+            { name: "PotPlayer", icon: "https://potplayer.org/favicon.ico", url: "https://potplayer.org/" },
+            { name: "Steam", icon: "https://store.steampowered.com/favicon.ico", url: "https://store.steampowered.com/" },
+            { name: "Visual Studio Code", icon: "https://code.visualstudio.com/favicon.ico", url: "https://code.visualstudio.com/" },
+            { name: "VirtualBox", icon: "https://www.virtualbox.org/favicon.ico", url: "https://www.virtualbox.org/" },
         ];
         
         let stageTwoActive = false;
         let idleTimer;
         const idleTime = 30000;
-        
+        const textArr = ["点","个","Start","I","Love","You"];
+        let textIdx = 0;
         const softwareContainer = document.getElementById('software-container');
         const searchInput = document.getElementById('search');
         const body = document.body;
@@ -340,129 +319,76 @@
         const githubButton = document.getElementById('githubButton');
         
         function init() {
-            renderSoftwareGridByCategory();
+            renderTiledLayout();
             setupIdleTimer();
             setupEventListeners();
             createMeteors();
         }
         
-        function renderSoftwareGridByCategory() {
+        // 平铺布局 - 增强随机性
+        function renderTiledLayout() {
             softwareContainer.innerHTML = '';
             
-            const categories = [...new Set(softwareData.map(item => item.category))];
-            const containerRect = softwareContainer.getBoundingClientRect();
-            
-            const cols = 3;
-            const rows = Math.ceil(categories.length / cols);
-            const regionWidth = containerRect.width / cols;
-            const regionHeight = containerRect.height / rows;
-            
-            categories.forEach((category, categoryIndex) => {
-                const row = Math.floor(categoryIndex / cols);
-                const col = categoryIndex % cols;
+            // 创建100个块
+            for (let i = 0; i < 100; i++) {
+                let block;
                 
-                const label = document.createElement('div');
-                label.className = 'category-label';
-                label.textContent = category;
-                label.style.top = `${row * regionHeight + 10}px`;
-                label.style.left = `${col * regionWidth + 10}px`;
-                softwareContainer.appendChild(label);
+                if (i < softwareData.length) {
+                    // 有软件的块
+                    const software = softwareData[i];
+                    block = createSoftwareBlock(software);
+                } else {
+                    // 空块
+                    block = createEmptyBlock();
+                }
                 
-                const categorySoftware = softwareData.filter(item => item.category === category);
-                const placedItems = [];
-                
-                categorySoftware.forEach((software, index) => {
-                    const width = Math.random() * 60 + 60;
-                    const height = Math.random() * 60 + 60;
-                    
-                    const item = createSoftwareItem(software, width, height);
-                    
-                    if (placeItemInCategoryRegion(item, placedItems, row, col, regionWidth, regionHeight, width, height)) {
-                        softwareContainer.appendChild(item);
-                    }
-                });
-            });
+                softwareContainer.appendChild(block);
+            }
         }
         
-        function createSoftwareItem(software, width, height) {
-            const item = document.createElement('div');
-            item.className = 'software-item';
-            item.setAttribute('data-category', software.category);
+        function createSoftwareBlock(software) {
+            const block = document.createElement('div');
+            block.className = 'software-item';
             
             const iconHtml = software.icon.startsWith('data:image/svg+xml') 
                 ? `<img src="${software.icon}" alt="${software.name}">`
                 : `<img src="${software.icon}" alt="${software.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMTgiIGZpbGw9IiMyMTk2RjMiLz4KPHRleHQgeD0iMjAiIHk9IjI1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BcHA8L3RleHQ+Cjwvc3ZnPgo='">`;
             
-            item.innerHTML = `
+            block.innerHTML = `
                 ${iconHtml}
                 <span class="software-name">${software.name}</span>
             `;
             
-            item.addEventListener('click', () => {
+            block.addEventListener('click', () => {
                 window.open(software.url, '_blank');
             });
             
-            item.style.width = `${width}px`;
-            item.style.height = `${height}px`;
+            // 增强随机性 - 高高低低，宽宽窄窄
+            const colSpan = Math.floor(Math.random() * 3) + 1; // 1-3列
+            const rowSpan = Math.floor(Math.random() * 3) + 1; // 1-3行
             
-            const rotation = (Math.random() - 0.5) * 10;
-            item.style.transform = `rotate(${rotation}deg)`;
-            item.style.zIndex = Math.floor(Math.random() * 10);
+            block.style.gridColumnEnd = `span ${colSpan}`;
+            block.style.gridRowEnd = `span ${rowSpan}`;
             
-            return item;
+            return block;
         }
         
-        function placeItemInCategoryRegion(item, placedItems, row, col, regionWidth, regionHeight, width, height) {
-            const containerRect = softwareContainer.getBoundingClientRect();
+        function createEmptyBlock() {
+            const block = document.createElement('div');
+            block.className = 'software-item empty-block';
             
-            const regionLeft = col * regionWidth + 20;
-            const regionTop = row * regionHeight + 40;
-            const regionRight = (col + 1) * regionWidth - 20;
-            const regionBottom = (row + 1) * regionHeight - 20;
+            // 随机颜色
+            const hue = Math.floor(Math.random() * 360);
+            block.style.background = `hsla(${hue}, 70%, 20%, 0.1)`;
             
-            const maxAttempts = 50;
-            for (let attempt = 0; attempt < maxAttempts; attempt++) {
-                const left = regionLeft + Math.random() * (regionWidth - width - 40);
-                const top = regionTop + Math.random() * (regionHeight - height - 60);
-                
-                if (left < regionLeft || left + width > regionRight ||
-                    top < regionTop || top + height > regionBottom) {
-                    continue;
-                }
-                
-                if (!isOverlapping(left, top, width, height, placedItems)) {
-                    item.style.left = `${left}px`;
-                    item.style.top = `${top}px`;
-                    placedItems.push({ left, top, width, height });
-                    return true;
-                }
-            }
+            // 增强随机性 - 高高低低，宽宽窄窄
+            const colSpan = Math.floor(Math.random() * 3) + 1; // 1-3列
+            const rowSpan = Math.floor(Math.random() * 3) + 1; // 1-3行
             
-            const left = regionLeft + Math.random() * (regionWidth - width - 40);
-            const top = regionTop + Math.random() * (regionHeight - height - 60);
-            item.style.left = `${Math.max(regionLeft, Math.min(left, regionRight - width))}px`;
-            item.style.top = `${Math.max(regionTop, Math.min(top, regionBottom - height))}px`;
-            placedItems.push({ 
-                left: parseFloat(item.style.left), 
-                top: parseFloat(item.style.top), 
-                width, 
-                height 
-            });
-            return true;
-        }
-        
-        function isOverlapping(left, top, width, height, placedItems) {
-            const padding = 10;
+            block.style.gridColumnEnd = `span ${colSpan}`;
+            block.style.gridRowEnd = `span ${rowSpan}`;
             
-            for (const placed of placedItems) {
-                if (left < placed.left + placed.width + padding &&
-                    left + width + padding > placed.left &&
-                    top < placed.top + placed.height + padding &&
-                    top + height + padding > placed.top) {
-                    return true;
-                }
-            }
-            return false;
+            return block;
         }
         
         function setupIdleTimer() {
@@ -494,24 +420,32 @@
             stageTwoActive = true;
             body.classList.add('stage-two');
             meteorShower.style.display = 'block';
-            stateToggle.textContent = '平铺';
+            stateToggle.textContent = getText(textIdx+1);
             
             arrangeInSphere();
             startMeteorShower();
         }
-        
+        function getText(idx){
+            textIdx = idx
+            if (textArr.length > idx){
+                return textArr[idx]
+            }else{
+                textIdx = 0
+                return textArr[0]
+            }
+        }
         function exitStageTwo() {
             stageTwoActive = false;
             body.classList.remove('stage-two');
             meteorShower.style.display = 'none';
-            stateToggle.textContent = '聚合';
+            stateToggle.textContent =  getText(textIdx+1);
             
-            renderSoftwareGridByCategory();
+            renderTiledLayout();
         }
         
         function arrangeInSphere() {
-            const items = document.querySelectorAll('.software-item');
-            const radius = Math.min(window.innerWidth, window.innerHeight) * 0.4; // 增加半径
+            const items = document.querySelectorAll('.software-item:not(.empty-block)');
+            const radius = Math.min(window.innerWidth, window.innerHeight) * 0.4;
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
             
@@ -562,7 +496,7 @@
         function setupEventListeners() {
             searchInput.addEventListener('input', function(e) {
                 const searchTerm = this.value.toLowerCase();
-                const items = document.querySelectorAll('.software-item');
+                const items = document.querySelectorAll('.software-item:not(.empty-block)');
                 
                 items.forEach(item => {
                     const name = item.querySelector('.software-name').textContent.toLowerCase();
@@ -593,11 +527,12 @@
                 window.open('https://github.com/GET-BUG/ai-ads', '_blank');
             });
             
+            // 修复缩放时块数量变化的bug
             window.addEventListener('resize', () => {
-                if (stageTwoActive) {
-                    arrangeInSphere();
+                if (!stageTwoActive) {
+                    renderTiledLayout();
                 } else {
-                    renderSoftwareGridByCategory();
+                    arrangeInSphere();
                 }
             });
         }
